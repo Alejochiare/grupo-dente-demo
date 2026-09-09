@@ -7,13 +7,16 @@
   <link rel="stylesheet" href="styles.css">
   <style>
     body{display:flex;align-items:center;justify-content:center;padding:1rem;min-height:100vh;}
-    .wrap{width:100%;max-width:460px;}
+    .wrap{width:100%;max-width:460px;display:flex;flex-direction:column;gap:1rem;}
     .card{background:var(--surface);border:1px solid var(--border-md);border-radius:var(--radius-lg);padding:2rem;text-align:center;}
     .card h1{font-family:var(--font-display);font-size:18px;margin-bottom:.75rem;}
     .card p{font-size:13px;color:var(--text-2);line-height:1.5;margin-bottom:1.25rem;}
-    #out{margin-top:1rem;font-size:12px;color:var(--text-3);white-space:pre-wrap;}
-    #out.ok{color:var(--green,#3a7a4a);}
-    #out.err{color:var(--red,#e05555);}
+    .card.danger h1{color:var(--red,#e05555);}
+    .btn-danger{background:none;border:1px solid var(--red-border,#e0555550);color:var(--red,#e05555);}
+    .btn-danger:hover{background:var(--red-bg,#e0555520);}
+    #out,#out2{margin-top:1rem;font-size:12px;color:var(--text-3);white-space:pre-wrap;}
+    #out.ok,#out2.ok{color:var(--green,#3a7a4a);}
+    #out.err,#out2.err{color:var(--red,#e05555);}
   </style>
 </head>
 <body>
@@ -21,13 +24,25 @@
     <div class="card">
       <h1>Cargar datos de demo</h1>
       <p>
-        Esto escribe clientes, vehículos y usuarios <strong>ficticios</strong> en el
-        Firestore configurado en <code>js/firebase-init.js</code>, para que la demo
-        arranque poblada. Usa IDs fijos: correrlo de nuevo resetea la demo a este
-        mismo estado inicial, no duplica nada.
+        Esto escribe 2 usuarios, 1 cliente y 1 vehículo <strong>ficticios</strong> en el
+        Firestore configurado en <code>js/firebase-init.js</code>, así queda un ejemplo
+        de referencia y el resto lo cargan ellos. Usa IDs fijos: correrlo de nuevo
+        resetea la demo a este mismo estado inicial, no duplica nada.
       </p>
       <button class="btn primary btn-full" id="btn-seed" onclick="runSeed()">Cargar datos de demo</button>
       <div id="out"></div>
+    </div>
+
+    <div class="card danger">
+      <h1>Vaciar todo</h1>
+      <p>
+        Borra <strong>todos</strong> los clientes, vehículos, alertas, tareas,
+        peritajes, gestorías y jerarquía cargados (los ficticios y cualquier otro
+        que hayan cargado probando). Los usuarios (<code>admin</code> / <code>vendedor</code>)
+        no se tocan, así se puede seguir entrando al sistema.
+      </p>
+      <button class="btn btn-full btn-danger" id="btn-clear" onclick="runClear()">Vaciar todo</button>
+      <div id="out2"></div>
     </div>
   </div>
 
@@ -45,10 +60,29 @@
       try {
         const r = await seedDemoData();
         out.className = 'ok';
-        out.textContent = `Listo — ${r.usuarios} usuarios, ${r.clientes} clientes, ${r.vehiculos} vehículos.\nUsuarios de prueba: admin / demo2026  ·  vendedor / demo2026\nYa podés ir a login.html`;
+        out.textContent = `Listo — ${r.usuarios} usuarios, ${r.clientes} cliente, ${r.vehiculos} vehículo.\nUsuarios de prueba: admin / demo2026  ·  vendedor / demo2026\nYa podés ir a login.html`;
       } catch (e) {
         out.className = 'err';
         out.textContent = 'Error: ' + e.message + '\n¿Ya pegaste el firebaseConfig en js/firebase-init.js y activaste Firestore en modo prueba?';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function runClear() {
+      if (!confirm('¿Seguro? Esto borra TODOS los clientes, vehículos, alertas, tareas, peritajes y gestorías cargados. No se puede deshacer.')) return;
+      const btn = document.getElementById('btn-clear');
+      const out = document.getElementById('out2');
+      btn.disabled = true;
+      out.className = '';
+      out.textContent = 'Borrando...';
+      try {
+        const r = await limpiarTodo();
+        out.className = 'ok';
+        out.textContent = `Listo — se borraron ${r.borrados} documentos. La base quedó vacía (los usuarios de login se mantienen).`;
+      } catch (e) {
+        out.className = 'err';
+        out.textContent = 'Error: ' + e.message;
       } finally {
         btn.disabled = false;
       }

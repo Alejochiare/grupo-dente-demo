@@ -120,25 +120,27 @@ body.light .header {
 .header-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: .7rem 1.5rem 0;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 1.5rem;
+  gap: .5rem 1.5rem;
 }
 .logo {
+  order: 1;
   font-family: var(--font-display);
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 600;
   letter-spacing: .02em;
   color: var(--text);
-  padding: 1rem 0;
+  padding: .2rem 0;
   white-space: nowrap;
   text-decoration: none;
 }
 .logo-dot { color: var(--gold); }
 .logo-sub {
   font-family: var(--font);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: .18em;
   text-transform: uppercase;
@@ -146,16 +148,27 @@ body.light .header {
   display: block;
   margin-top: -2px;
 }
-.nav { display: flex; gap: 0; margin-left: .5rem; flex: 1; overflow-x: auto; }
+/* La nav siempre ocupa una fila propia y completa: nunca se recorta
+   ni queda un scrollbar horizontal feo, sin importar cuántas
+   secciones tenga el sistema. */
+.nav {
+  order: 3;
+  flex: 1 0 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-top: 1px solid var(--border);
+  margin-top: .15rem;
+}
 .nav-btn {
   background: none;
   border: none;
   border-bottom: 1.5px solid transparent;
-  padding: 1rem 14px;
+  padding: .7rem 13px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  letter-spacing: .07em;
+  letter-spacing: .06em;
   text-transform: uppercase;
   font-family: var(--font);
   color: var(--text-3);
@@ -171,13 +184,14 @@ body.light .header {
 .nav-btn.alert-dot::after {
   content: '';
   position: absolute;
-  top: 14px; right: 8px;
+  top: 11px; right: 6px;
   width: 6px; height: 6px;
   background: var(--red);
   border-radius: 50%;
   border: 1.5px solid var(--bg);
 }
 .header-user {
+  order: 2;
   margin-left: auto;
   display: flex;
   align-items: center;
